@@ -339,10 +339,10 @@
         <!-- ----------------------  Navbar ------------------ -->
         <nav>
             <i class='bx bx-menu menu' ></i>
-            <a href="#" class="nav-link">Categories</a>
+            <a href="#" class="nav-link">Catégories</a>
             <form id="searchForm" action="" method="get">
                 <div class="form-input">
-                    <input type="search" name="searchTerm" placeholder="Search..." value="${param.searchTerm}">
+                    <input type="search" name="searchTerm" placeholder="Rechercher..." value="${param.searchTerm}">
                     <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
                 </div>
             </form>
