@@ -952,7 +952,7 @@
                     <!--Order-->
                     <div class="orber">
                         <div class="head">
-                            <h3>Derniers Membres</h3>
+                            <h3>Les derniers membres</h3>
                             <% if (request.getAttribute("resultatsRecherche") != null) { %>
                                 <a href="${pageContext.request.contextPath}/Components/Membres/indexMembre.jsp" class="btn-clear-search">
                                     <i class='bx bx-x'></i>

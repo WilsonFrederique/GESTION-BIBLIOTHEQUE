@@ -1,7 +1,17 @@
+<%@page import="java.sql.SQLException"%>
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.Statement"%>
+<%@page import="Bibliotheque.DB_Connexion"%>
+<%@page import="java.sql.Connection"%>
 <!--Mon Css-->
 <style>
     /*Container*/
 /* =========== CONTENT ========== */
+.div-resultat{
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.6rem;
+}
         #content{
             position: relative;
             width: calc(100% - 280px);
@@ -609,6 +619,154 @@
         color: #3c91e6;
         transform: scale(1.1);
     }
+    
+    /* Style modernisé pour les icônes d'action */
+    .action-icons {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    .action-icons a, 
+    .action-icons button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        color: #718096;
+        background-color: transparent;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        cursor: pointer;
+        border: none;
+        outline: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Effet de vague au survol */
+    .action-icons a::after,
+    .action-icons button::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 5px;
+        height: 5px;
+        background: rgba(255, 255, 255, 0.5);
+        opacity: 0;
+        border-radius: 100%;
+        transform: scale(1, 1) translate(-50%, -50%);
+        transform-origin: 50% 50%;
+    }
+
+    .action-icons a:hover::after,
+    .action-icons button:hover::after {
+        animation: ripple 0.6s ease-out;
+    }
+
+    @keyframes ripple {
+        0% {
+            transform: scale(0, 0);
+            opacity: 0.5;
+        }
+        100% {
+            transform: scale(20, 20);
+            opacity: 0;
+        }
+    }
+
+    /* Icône d'édition */
+    .action-icons a:first-child {
+        color: #3c91e6;
+        background-color: rgba(60, 145, 230, 0.1);
+    }
+
+    .action-icons a:first-child:hover {
+        color: white;
+        background-color: #3c91e6;
+        box-shadow: 0 4px 12px rgba(60, 145, 230, 0.25);
+    }
+
+    /* Icône de suppression */
+    .action-icons button {
+        color: #e53e3e;
+        background-color: rgba(229, 62, 62, 0.1);
+        padding: 0;
+    }
+
+    .action-icons button:hover {
+        color: white;
+        background-color: #e53e3e;
+        box-shadow: 0 4px 12px rgba(229, 62, 62, 0.25);
+    }
+
+    .action-icons i {
+        font-size: 1.25rem;
+        transition: transform 0.2s ease;
+    }
+
+    .action-icons a:hover i,
+    .action-icons button:hover i {
+        transform: scale(1.1);
+    }
+
+    /* Tooltip moderne */
+    .action-icons a[title]:hover::before,
+    .action-icons button[title]:hover::before {
+        content: attr(title);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #2d3748;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        white-space: nowrap;
+        margin-bottom: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        z-index: 10;
+    }
+
+    .action-icons a[title]:hover::after,
+    .action-icons button[title]:hover::after {
+        content: '';
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 5px;
+        border-style: solid;
+        border-color: #2d3748 transparent transparent transparent;
+        margin-bottom: 3px;
+    }
+
+    /* Animation au clic */
+    .action-icons a:active,
+    .action-icons button:active {
+        transform: scale(0.95);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .action-icons {
+            gap: 0.5rem;
+        }
+
+        .action-icons a, 
+        .action-icons button {
+            width: 32px;
+            height: 32px;
+        }
+
+        .action-icons i {
+            font-size: 1.1rem;
+        }
+    }
 </style>
 
 
@@ -839,6 +997,9 @@
     }
 </style>
 
+
+
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -881,27 +1042,52 @@
 
                 <!-- ************************ Box********************** -->
                 <ul class="box-info">
+                    <%
+                        // Récupérer les statistiques depuis la base de données
+                        try (Connection conn = DB_Connexion.getConnection();
+                             Statement stmt = conn.createStatement()) {
+
+                            // Nombre de membres
+                            ResultSet rsMembres = stmt.executeQuery("SELECT COUNT(idpers) AS total FROM membre");
+                            rsMembres.next();
+                            int totalMembres = rsMembres.getInt("total");
+
+                            // Nombre de livres
+                            ResultSet rsLivres = stmt.executeQuery("SELECT COUNT(idlivre) AS total FROM livre");
+                            rsLivres.next();
+                            int totalLivres = rsLivres.getInt("total");
+
+                            // Nombre de prêts
+                            ResultSet rsPrets = stmt.executeQuery("SELECT COUNT(idpret) AS total FROM preter");
+                            rsPrets.next();
+                            int totalPrets = rsPrets.getInt("total");
+                    %>
                     <li>
-                        <i class='bx bx-group' ></i>
+                        <i class='bx bx-group'></i>
                         <span class="text">
-                            <h3 class="txt-box-top">1020</h3>
+                            <h3 class="txt-box-top"><%= totalMembres %></h3>
                             <p class="txt-box-bottom">Total des membres</p>
                         </span>
                     </li>
                     <li>
-                        <i class='bx bx-book-alt' ></i>
+                        <i class='bx bx-book-alt'></i>
                         <span class="text">
-                            <h3 class="txt-box-top">2830</h3>
+                            <h3 class="txt-box-top"><%= totalLivres %></h3>
                             <p class="txt-box-bottom">Total des Livres</p>
                         </span>
                     </li>
                     <li>
-                        <i class='bx bx-user' ></i>
+                        <i class='bx bx-user'></i>
                         <span class="text">
-                            <h3 class="txt-box-top">543</h3>
+                            <h3 class="txt-box-top"><%= totalPrets %></h3>
                             <p class="txt-box-bottom">Total des Preters</p>
                         </span>
                     </li>
+                    <%
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    %>
                 </ul>
 
                 <!-- ************************  HOME  *********************** -->
@@ -930,11 +1116,11 @@
                                     <a href="#"><i class='bx bxl-instagram-alt' ></i></a>
                                     <a href="https://www.linkedin.com/in/wilson-frederique-500b82352"><i class='bx bxl-linkedin' ></i></a>
                                 </div>
-                                <a href="#" class="btn">Visitez les membres</a>
+                                <a href="/GestionBibliotheque/Components/Membres/indexMembre.jsp" class="btn">Visitez les membres</a>
                             </div>
 
                             <div class="home-img">
-                                <img class="img-profil1" src="./images/b2.jpg" alt="">
+                                <img class="img-profil1" src="./images/Logo.png" alt="">
                             </div>
                         </section>
                         
@@ -944,50 +1130,55 @@
                 
                 <!--**************************** TABLES 1 ******************************-->
                 
+                <!----------------------------------- Listes Pour Les derniers livres -------------------------------------->
                 <div class="table-date">
                     <!--Todo-->
                     <div class="todo">
                         <div class="head">
-                            <h3>Todos</h3>
-                            <i class='bx bx-plus icon-tbl' ></i>
+                            <h3>Les derniers livres</h3>
                             <i class='bx bx-filter icon-tbl'></i>
                         </div>
                         <ul class="todo-list todo-color">
-                            <li class="not-completed">
-                                <p>Todo List</p>
-                                <i class='bx bx-dots-vertical-rounded bg-hover-icon' ></i>
-                            </li>
-                            <li class="completed">
-                                <p>Todo List</p>
-                                <i class='bx bx-dots-vertical-rounded' ></i>
-                            </li>
-                            <li class="not-completed">
-                                <p>Todo List</p>
-                                <i class='bx bx-dots-vertical-rounded' ></i>
-                            </li>
-                            <li class="completed">
-                                <p>Todo List</p>
-                                <i class='bx bx-dots-vertical-rounded' ></i>
-                            </li>
-                            <li class="not-completed">
-                                <p>Todo List</p>
-                                <i class='bx bx-dots-vertical-rounded' ></i>
-                            </li>
-                            <li class="completed">
-                                <p>Todo List</p>
-                                <i class='bx bx-dots-vertical-rounded' ></i>
-                            </li>
+                            <%
+                                // Récupérer la liste des livres depuis la base de données
+                                try (Connection conn = DB_Connexion.getConnection();
+                                     Statement stmt = conn.createStatement();
+                                     ResultSet rs = stmt.executeQuery("SELECT * FROM livre ORDER BY idlivre")) {
+
+                                    while (rs.next()) {
+                                        String idLivre = rs.getString("idlivre");
+                                        String designation = rs.getString("designation");
+                                        int exemplaire = rs.getInt("exemplaire");
+                            %>
+                                        <li class="not-completed">
+                                            <div>
+                                                <div>
+                                                    <p><span><b><%= designation %></b></span></p>
+                                                </div>
+                                            </div>
+                                            <div  class="div-resultat">
+                                                <p><span>(<%= exemplaire %> exemplaire<%= exemplaire > 1 ? "s" : "" %>)</span></p>
+                                                <i class='bx bx-dots-vertical-rounded bg-hover-icon'></i>
+                                            </div>  
+                                        </li>
+                            <%
+                                    }
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
+                            %>
                         </ul>
                     </div>
                 </div>
                 
                 <!--**************************** TABLES 2 et 3******************************-->
 
+                <!----------------------------------- Listes Pour Les derniers livres -------------------------------------->
                 <div class="table-date">
                     <!--Order-->
                     <div class="orber">
                         <div class="head">
-                            <h3 class="dernier1">Derniers Membres</h3>
+                            <h3 class="dernier1">Les derniers membres</h3>
                             <div class="search-container">
                                 <input type="search" placeholder="Search..." class="search-input" style="display: none;">
                                 <i class='bx bx-search icon-tbl search-icon'></i>
@@ -1005,82 +1196,53 @@
                                 </tr>
                             </thead>
                             <tbody class="tbody">
-                                <tr>
-                                    <td>
-                                        <img src="/GestionBibliotheque/images/a4.png" alt="Avatar">
-                                        <p>M001</p>
-                                    </td>
-                                    <td>
-                                        <p>Walle Fred</p>
-                                    </td>
-                                    <td>M</td>
-                                    <td><span class="status process">0000000000</span></td>
-                                    <td class="action-icons">
-                                        <a href="#" aria-label="Edit" title="Edit">
-                                            <i class='bx bx-edit'></i>
-                                        </a>
-                                        <a href="#" aria-label="Delete" title="Delete">
-                                            <i class='bx bx-trash'></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <img src="/GestionBibliotheque/images/a4.png" alt="Avatar">
-                                        <p>M001</p>
-                                    </td>
-                                    <td>
-                                        <p>Walle Fred</p>
-                                    </td>
-                                    <td>M</td>
-                                    <td><span class="status process">0000000000</span></td>
-                                    <td class="action-icons">
-                                        <a href="#" aria-label="Edit" title="Edit">
-                                            <i class='bx bx-edit'></i>
-                                        </a>
-                                        <a href="#" aria-label="Delete" title="Delete">
-                                            <i class='bx bx-trash'></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <img src="/GestionBibliotheque/images/a4.png" alt="Avatar">
-                                        <p>M001</p>
-                                    </td>
-                                    <td>
-                                        <p>Walle Fred</p>
-                                    </td>
-                                    <td>M</td>
-                                    <td><span class="status process">0000000000</span></td>
-                                    <td class="action-icons">
-                                        <a href="#" aria-label="Edit" title="Edit">
-                                            <i class='bx bx-edit'></i>
-                                        </a>
-                                        <a href="#" aria-label="Delete" title="Delete">
-                                            <i class='bx bx-trash'></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <img src="/GestionBibliotheque/images/a4.png" alt="Avatar">
-                                        <p>M001</p>
-                                    </td>
-                                    <td>
-                                        <p>Walle Fred</p>
-                                    </td>
-                                    <td>M</td>
-                                    <td><span class="status process">0000000000</span></td>
-                                    <td class="action-icons">
-                                        <a href="#" aria-label="Edit" title="Edit">
-                                            <i class='bx bx-edit'></i>
-                                        </a>
-                                        <a href="#" aria-label="Delete" title="Delete">
-                                            <i class='bx bx-trash'></i>
-                                        </a>
-                                    </td>
-                                </tr>
+                                <%
+                                    // Récupérer la liste des membres depuis la base de données
+                                    try (Connection conn = DB_Connexion.getConnection();
+                                         Statement stmt = conn.createStatement();
+                                         ResultSet rs = stmt.executeQuery("SELECT * FROM membre ORDER BY idpers")) {
+
+                                        while (rs.next()) {
+                                            String idpers = rs.getString("idpers");
+                                            String nom = rs.getString("nom");
+                                            String sexe = rs.getString("sexe");
+                                            int age = rs.getInt("age");
+                                            String contact = rs.getString("contact");
+                                            // Récupérer la première lettre du sexe pour l'affichage
+                                            String sexeInitial = sexe.substring(0, 1);
+                                %>
+                                            <tr>
+                                                <td>
+                                                    <img src="/GestionBibliotheque/images/a4.png" alt="Avatar">
+                                                    <p><%= idpers %></p>
+                                                </td>
+                                                <td>
+                                                    <p><%= nom %></p>
+                                                </td>
+                                                <td><%= sexeInitial %></td>
+                                                <td><span class="status process"><%= contact %></span></td>
+                                                <td class="action-icons">
+                                                    <a href="/GestionBibliotheque/Components/Membres/FrmMembre.jsp?edit=true&idpers=<%= idpers %>&nom=<%= nom %>&sexe=<%= sexe %>&age=<%= age %>&contact=<%= contact %>" 
+                                                       aria-label="Edit" title="Edit">
+                                                        <i class='bx bx-edit'></i>
+                                                    </a>
+                                                    <!-- Formulaire de suppression -->
+                                                    <form method="get" action="<%= request.getContextPath() %>/ServletMembres" style="display:inline;">
+                                                        <input type="hidden" name="action" value="delete">
+                                                        <input type="hidden" name="idpers" value="<%= idpers %>">
+                                                        <button type="submit" class="btn btn-danger btn-invisble" 
+                                                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce membre ?')">
+                                                                <i class='bx bx-trash'></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                <%
+                                        }
+                                    } catch (SQLException e) {
+                                        e.printStackTrace();
+                                    }
+                                %>
                             </tbody>
                         </table>
                     </div>

@@ -822,6 +822,47 @@
 </style>
 
 
+<!--Css Message Erreur-->
+<style>
+    .alert-error {
+        position: relative;
+        margin: 20px auto;
+        max-width: 100%;
+        padding: 15px 25px;
+        background-color: #ffe5e5;
+        color: #d8000c;
+        border-left: 6px solid #d8000c;
+        border-radius: 10px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 16px;
+        animation: fadeIn 0.4s ease;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 8px;
+        right: 12px;
+        background: none;
+        border: none;
+        font-size: 20px;
+        color: #d8000c;
+        cursor: pointer;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="java.sql.Timestamp" %>
@@ -942,6 +983,7 @@
 
                 <!-- *********************** FRM ************************ -->
                 <div class="todo">
+                    
                     <div class="container-frm-empl">
                         <div class="top-header">
                             <% if (isEditMode) { %>  
@@ -957,35 +999,39 @@
                             <div class="alert-error" data-error="<%= error %>">
                                 <% 
                                     String errorMessage = "";
-                                        switch(error) {
-                                            case "id_existe_deja":
-                                                errorMessage = "Cet ID de prêt existe déjà";
-                                                break;
-                                            case "champs_vides":
-                                                errorMessage = "Tous les champs obligatoires doivent être remplis";
-                                                break;
-                                            case "date_invalide":
-                                                errorMessage = "Les dates doivent être valides";
-                                                break;
-                                            case "connexion_bdd":
-                                                errorMessage = "Erreur de connexion à la base de données";
-                                                break;
-                                            case "pret_non_trouve":
-                                                errorMessage = "Prêt non trouvé";
-                                                break;
-                                            case "livre_indisponible":
-                                                errorMessage = "Ce livre n'est plus disponible (plus d'exemplaires)";
-                                                break;
-                                            case "mise_a_jour_exemplaire_echouee":
-                                                errorMessage = "Erreur lors de la mise à jour du nombre d'exemplaires";
-                                                break;
-                                            default:
-                                                errorMessage = "Erreur: " + error;
-                                        }
+                                    switch(error) {
+                                        case "id_existe_deja":
+                                            errorMessage = "Cet ID de prêt existe déjà";
+                                            break;
+                                        case "champs_vides":
+                                            errorMessage = "Tous les champs obligatoires doivent être remplis";
+                                            break;
+                                        case "date_invalide":
+                                            errorMessage = "Les dates doivent être valides";
+                                            break;
+                                        case "connexion_bdd":
+                                            errorMessage = "Erreur de connexion à la base de données";
+                                            break;
+                                        case "pret_non_trouve":
+                                            errorMessage = "Prêt non trouvé";
+                                            break;
+                                        case "livre_indisponible":
+                                            errorMessage = "Ce livre n'est plus disponible (plus d'exemplaires)";
+                                            break;
+                                        case "mise_a_jour_exemplaire_echouee":
+                                            errorMessage = "Erreur lors de la mise à jour du nombre d'exemplaires";
+                                            break;
+                                        case "date_retour_trop_eloignee":
+                                            errorMessage = "La date de retour ne doit pas dépasser 14 jours après la date de prêt";
+                                            break;
+                                        default:
+                                            errorMessage = "Erreur: " + error;
+                                    }
                                 %>
+
                                 <%= errorMessage %>
                                 <!-- Optionnel : bouton de fermeture -->
-                                <button class="close-btn" onclick="this.parentElement.style.display='none'">×</button>
+                                <button class="close-btn" onclick="this.parentElement.style.display='none'">x</button>
                             </div>
                         <% } %>
 
@@ -1050,11 +1096,11 @@
                                                    value="<%= datepretValue %>">
                                         </div>
 
-                                        <!-- <div class="input-field-div">
-                                            <label>DATE RETOUR *</label>
-                                            <input name="dateretour" type="date" placeholder="Date de retour" required
+                                        <div class="input-field-div">
+                                            <label>DATE RETOUR</label>
+                                            <input name="dateretour" type="date" placeholder="Date de retour (optionnel)"
                                                    value="<%= dateretourValue %>">
-                                        </div> -->
+                                        </div>
                                     </div>
 
                                     <% if (isEditMode) { %>                                                
@@ -1101,5 +1147,42 @@
             %>
             
         </section>
+            
+            
+        <!--Script que la date de retour ne dépasse pas 14 jours après-->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const form = document.querySelector('form');
+                form.addEventListener('submit', function(e) {
+                    const datepretInput = document.querySelector('input[name="datepret"]');
+                    const dateretourInput = document.querySelector('input[name="dateretour"]');
+
+                    if (dateretourInput.value) {
+                        const datepret = new Date(datepretInput.value);
+                        const dateretour = new Date(dateretourInput.value);
+
+                        // Calculer la différence en jours
+                        const diffTime = dateretour - datepret;
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+
+                        if (diffDays > 14) {
+                            e.preventDefault();
+                            const errorBox = document.getElementById('custom-error');
+                            errorBox.textContent = 'La date de retour ne doit pas dépasser 14 jours après la date de prêt';
+                            errorBox.classList.remove('hidden');
+
+                            // Masquer automatiquement après 5 secondes (optionnel)
+                            setTimeout(() => {
+                                errorBox.classList.add('hidden');
+                            }, 5000);
+
+                            dateretourInput.focus();
+                            return false;
+                            }
+                        }
+                    return true;
+                });
+            });
+        </script>
     </body>
 </html>

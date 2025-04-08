@@ -56,7 +56,6 @@ public class ServletPreters extends HttpServlet {
 
         String action = request.getParameter("action");
         if (action == null) {
-            // Si pas d'action spécifiée, rediriger vers la page principale
             response.sendRedirect(request.getContextPath() + "/Components/Preters/indexPreters.jsp");
             return;
         }
@@ -146,11 +145,12 @@ public class ServletPreters extends HttpServlet {
     }
 
     private void insertPret(HttpServletRequest request, HttpServletResponse response) 
-            throws IOException {
+        throws IOException {
         String idpret = getTrimmedParameter(request, "idpret");
         String idpers = getTrimmedParameter(request, "idpers");
         String idlivre = getTrimmedParameter(request, "idlivre");
         String datepretStr = getTrimmedParameter(request, "datepret");
+        String dateretourStr = getTrimmedParameter(request, "dateretour");
 
         if (isAnyParameterEmpty(idpret, idpers, idlivre, datepretStr)) {
             redirectWithError(request, response, "/Components/Preters/FrmPreters.jsp", "champs_vides");
@@ -163,11 +163,30 @@ public class ServletPreters extends HttpServlet {
             Date datepret = dateTimeFormat.parse(datepretStr);
             Timestamp datepretTimestamp = new Timestamp(datepret.getTime());
 
-            // Calcul de la date de retour automatique (14 jours après la date de prêt)
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(datepret);
-            calendar.add(Calendar.DAY_OF_MONTH, 14);
-            java.sql.Date dateretourSqlDate = new java.sql.Date(calendar.getTimeInMillis());
+            // Calcul de la date de retour
+            java.sql.Date dateretourSqlDate;
+            if (dateretourStr != null && !dateretourStr.isEmpty()) {
+                // Si date de retour fournie, l'utiliser
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date dateretour = dateFormat.parse(dateretourStr);
+
+                // Validation: Vérifier que la date de retour ne dépasse pas 14 jours
+                long diff = dateretour.getTime() - datepret.getTime();
+                long diffDays = diff / (1000 * 60 * 60 * 24);
+
+                if (diffDays > 13) {
+                    redirectWithError(request, response, "/Components/Preters/FrmPreters.jsp", "date_retour_trop_eloignee");
+                    return;
+                }
+
+                dateretourSqlDate = new java.sql.Date(dateretour.getTime());
+            } else {
+                // Sinon, calculer 14 jours après la date de prêt
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(datepret);
+                calendar.add(Calendar.DAY_OF_MONTH, 14);
+                dateretourSqlDate = new java.sql.Date(calendar.getTimeInMillis());
+            }
 
             try (Connection conn = DB_Connexion.getConnection()) {
                 if (conn == null) {
@@ -212,7 +231,7 @@ public class ServletPreters extends HttpServlet {
                     try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
                         updateStmt.setString(1, idlivre);
                         int updatedRows = updateStmt.executeUpdate();
-                        
+
                         if (updatedRows <= 0) {
                             conn.rollback();
                             redirectWithError(request, response, "/Components/Preters/FrmPreters.jsp", "mise_a_jour_exemplaire_echouee");
@@ -244,6 +263,7 @@ public class ServletPreters extends HttpServlet {
         String idpers = getTrimmedParameter(request, "idpers");
         String idlivre = getTrimmedParameter(request, "idlivre");
         String datepretStr = getTrimmedParameter(request, "datepret");
+        String dateretourStr = getTrimmedParameter(request, "dateretour");
 
         if (isAnyParameterEmpty(idpret, idpers, idlivre, datepretStr)) {
             redirectWithError(request, response, "/Components/Preters/FrmPreters.jsp", "champs_vides", "edit=true&idpret=" + idpret);
@@ -256,11 +276,30 @@ public class ServletPreters extends HttpServlet {
             Date datepret = dateTimeFormat.parse(datepretStr);
             Timestamp datepretTimestamp = new Timestamp(datepret.getTime());
 
-            // Calcul de la nouvelle date de retour (14 jours après la date de prêt)
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(datepret);
-            calendar.add(Calendar.DAY_OF_MONTH, 14);
-            java.sql.Date dateretourSqlDate = new java.sql.Date(calendar.getTimeInMillis());
+            // Calcul de la date de retour
+            java.sql.Date dateretourSqlDate;
+            if (dateretourStr != null && !dateretourStr.isEmpty()) {
+                // Si date de retour fournie, l'utiliser
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date dateretour = dateFormat.parse(dateretourStr);
+
+                // Validation: Vérifier que la date de retour ne dépasse pas 14 jours
+                long diff = dateretour.getTime() - datepret.getTime();
+                long diffDays = diff / (1000 * 60 * 60 * 24);
+
+                if (diffDays > 13) {
+                    redirectWithError(request, response, "/Components/Preters/FrmPreters.jsp", "date_retour_trop_eloignee", "edit=true&idpret=" + idpret);
+                    return;
+                }
+
+                dateretourSqlDate = new java.sql.Date(dateretour.getTime());
+            } else {
+                // Sinon, calculer 14 jours après la date de prêt
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(datepret);
+                calendar.add(Calendar.DAY_OF_MONTH, 14);
+                dateretourSqlDate = new java.sql.Date(calendar.getTimeInMillis());
+            }
 
             try (Connection conn = DB_Connexion.getConnection()) {
                 if (conn == null) {
