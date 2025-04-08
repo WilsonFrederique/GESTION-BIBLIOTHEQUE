@@ -502,7 +502,7 @@
                     <!--Order-->
                     <div class="orber">
                         <div class="head">
-                            <h3>Derniers Preters</h3>
+                            <h3>Les derniers messages</h3>
                             <div class="search-container">
                                 <input type="search" placeholder="Rechercher..." class="search-input" style="display: none;">
                                 <i class='bx bx-search icon-tbl search-icon'></i>

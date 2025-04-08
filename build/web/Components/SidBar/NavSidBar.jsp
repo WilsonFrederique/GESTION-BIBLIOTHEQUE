@@ -283,13 +283,13 @@
             <li>
                 <a href="/GestionBibliotheque/Components/Membres/indexMembre.jsp">
                     <i class='bx bxs-group'></i>
-                    <span class="text">MEMBRES</span>
+                    <span class="text">LISTE DES MEMBRES</span>
                 </a>
             </li>
             <li>
                 <a href="/GestionBibliotheque/Components/Livres/indexLivres.jsp">
                     <i class='bx bxs-book' ></i>
-                    <span class="text">LIVRES</span>
+                    <span class="text">LISTE DES LIVRES</span>
                 </a>
             </li>
             <li>
@@ -305,15 +305,21 @@
                 </a>
             </li>
             <li>
-                <a href="/GestionBibliotheque/Components/Messages/indexMessages.jsp">
-                    <i class='bx bxs-message-dots'></i>
-                    <span class="text">MESSAGES</span>
-                </a>
-            </li>
-            <li>
                 <a href="/GestionBibliotheque/Components/Historiques/indexHistoriques.jsp">
                     <i class='bx bx-history' ></i>
                     <span class="text">HISTORIQUE</span>
+                </a>
+            </li>
+            <li>
+                <a href="/GestionBibliotheque/Components/GenererPDF/indexPDF.jsp">
+                    <i class='bx bxs-file-pdf'></i>
+                    <span class="text">GÉNÉRER LE PDF</span>
+                </a>
+            </li>
+            <li>
+                <a href="/GestionBibliotheque/Components/Messages/indexMessages.jsp">
+                    <i class='bx bxs-message-dots'></i>
+                    <span class="text">MESSAGES</span>
                 </a>
             </li>
         </ul>

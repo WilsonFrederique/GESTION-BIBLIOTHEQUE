@@ -24,6 +24,10 @@
         <servlet-name>ServletHistoriques</servlet-name>
         <servlet-class>Bibliotheque.ServletHistoriques</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ServletPDF</servlet-name>
+        <servlet-class>Bibliotheque.ServletPDF</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LocationServlet</servlet-name>
         <url-pattern>/LocationServlet</url-pattern>
@@ -47,6 +51,10 @@
     <servlet-mapping>
         <servlet-name>ServletHistoriques</servlet-name>
         <url-pattern>/ServletHistoriques</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ServletPDF</servlet-name>
+        <url-pattern>/ServletPDF</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

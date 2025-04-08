@@ -999,7 +999,6 @@
     }
 </style>
 
-
 <!--Stle Btn Recherche entre Deux dates-->
 <style>
     .btn-modern {
@@ -1040,6 +1039,101 @@
     }
 </style>
 
+<!--Css Pour Format PDF Prêts-->
+<style>
+    .format-pdf {
+            max-width: 100%;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .format-pdf h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 22px;
+            color: #333;
+        }
+
+        .member-info p {
+            margin: 4px 0;
+            font-size: 15px;
+        }
+
+        .table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            margin-top: 20px !important;
+            margin-bottom: 20px !important;
+        }
+        
+        .table thead tr .th, .table tbody tr .td{
+            padding-left: 2rem !important;
+        }
+        
+        .table .thead .tr .th, .table .tbody .tr .td{
+            border: 1px solid #ccc !important;
+            padding: 10px !important;
+            font-size: 14px !important;
+            text-align: left !important;            
+        }
+
+        .table .thead .tr .th {
+            background-color: #f0f0f0 !important;
+            font-weight: bold !important;
+        }
+
+        .footer-dates p {
+            margin: 6px 0 !important;
+        }        
+        
+</style>
+
+<!--Css Btn Telechager PDF et Annuler PDF-->
+<style>
+    .group-btns-telecharge-annuler {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 30px;
+    }
+
+    .group-btns-telecharge-annuler button {
+        width: 100%;
+        padding: 12px 24px;
+        font-size: 16px;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .telecharge {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .telecharge:hover {
+        background-color: #45a049;
+        transform: scale(1.05);
+    }
+
+    .annuler {
+        background-color: #f44336;
+        color: white;
+    }
+
+    .annuler:hover {
+        background-color: #e53935;
+        transform: scale(1.05);
+    }
+</style>
+
+<%--<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>--%>
+<%--<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>--%>
 
 <%@page import="Bibliotheque.DB_Connexion"%>
 <%@ page import="java.sql.*" %>
@@ -1087,6 +1181,7 @@
                 </div>
 
                 <!-- ********************** Prêts ************************ -->
+                
                 
                 <!--Order : Liste des prêts effectuées entre deux dates-->
                 <div class="table-date">
